@@ -1,10 +1,13 @@
+import os
+
 import requests
+import dotenv
 
 
 class VideoSummarizer:
     @staticmethod
     def video_sum(text):
-        """Анализирует текст субтитров и возвращает краткое описание видео."""
+        """Анализирует текст субтитров и возвращает описание видео."""
         prompt = f"""Проанализируй предоставленный текст субтитров YouTube-видео и сгенерируй максимально детальное и полное описание его содержания, включающее все важные детали, упомянутые аспекты и контекст. Укажи основную тему, ключевые идеи, аргументы, детали, вопросы, а также упомянутые примеры и контексты.  
 
         **Информация о видео и субтитры (субтитры в формате: время речи : текст речи):**  
@@ -25,9 +28,11 @@ class VideoSummarizer:
     @staticmethod
     def ask_model(prompt):
         """Отправляет запрос к локальной модели Ollama."""
-        url = "http://127.0.0.1:11434/api/generate"
+        dotenv.load_dotenv()
+        url = os.getenv("LLM_adress")
+        model = os.getenv("LLM_model")
         payload = {
-            "model": "qwen2.5-coder:3b",
+            "model": model,
             "prompt": prompt,
             "stream": False
         }
