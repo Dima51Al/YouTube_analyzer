@@ -1,0 +1,4 @@
+pyperclip
+youtube-dl
+yt-dlp
+requests

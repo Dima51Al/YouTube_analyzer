@@ -1,10 +1,11 @@
+import os
 import requests
 
 
 class VideoSummarizer:
     @staticmethod
     def video_sum(text):
-        """Анализирует текст субтитров и возвращает краткое описание видео."""
+        """Анализирует текст субтитров и возвращает описание видео."""
         prompt = f"""Проанализируй предоставленный текст субтитров YouTube-видео и сгенерируй максимально детальное и полное описание его содержания, включающее все важные детали, упомянутые аспекты и контекст. Укажи основную тему, ключевые идеи, аргументы, детали, вопросы, а также упомянутые примеры и контексты.  
 
         **Информация о видео и субтитры (субтитры в формате: время речи : текст речи):**  
@@ -23,11 +24,31 @@ class VideoSummarizer:
         return VideoSummarizer.ask_model(prompt)
 
     @staticmethod
+    def load_config():
+        """Загружает конфигурацию из файла config.txt"""
+        config = {}
+        try:
+            with open('config.txt', 'r') as f:
+                for line in f:
+                    if '=' in line:
+                        key, value = line.strip().split('=', 1)
+                        config[key.strip()] = value.strip().strip('"\'')
+        except FileNotFoundError:
+            print("Файл config.txt не найден. Создайте его с параметрами LLM_adress и LLM_model")
+        return config
+
+    @staticmethod
     def ask_model(prompt):
         """Отправляет запрос к локальной модели Ollama."""
-        url = "http://127.0.0.1:11434/api/generate"
+        config = VideoSummarizer.load_config()
+        url = config.get("LLM_adress")
+        model = config.get("LLM_model")
+
+        if not url or not model:
+            return "Ошибка: не заданы URL или модель в config.txt"
+
         payload = {
-            "model": "qwen2.5-coder:3b",
+            "model": model,
             "prompt": prompt,
             "stream": False
         }
@@ -42,6 +63,7 @@ class VideoSummarizer:
             return f"Ошибка: {response.status_code}, {response.text}"
         except requests.exceptions.RequestException as e:
             return f"Ошибка соединения: {e}"
+
 
 if __name__ == '__main__':
     print(VideoSummarizer.ask_model("как дела"))
