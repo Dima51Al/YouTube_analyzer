@@ -1,0 +1,7 @@
+asyncio
+threading
+pyperclip
+youtube-dl
+yt-dlp
+requests
+python-dotenv
