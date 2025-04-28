@@ -1,7 +1,5 @@
 import os
-
 import requests
-import dotenv
 
 
 class VideoSummarizer:
@@ -26,11 +24,29 @@ class VideoSummarizer:
         return VideoSummarizer.ask_model(prompt)
 
     @staticmethod
+    def load_config():
+        """Загружает конфигурацию из файла config.txt"""
+        config = {}
+        try:
+            with open('config.txt', 'r') as f:
+                for line in f:
+                    if '=' in line:
+                        key, value = line.strip().split('=', 1)
+                        config[key.strip()] = value.strip().strip('"\'')
+        except FileNotFoundError:
+            print("Файл config.txt не найден. Создайте его с параметрами LLM_adress и LLM_model")
+        return config
+
+    @staticmethod
     def ask_model(prompt):
         """Отправляет запрос к локальной модели Ollama."""
-        dotenv.load_dotenv()
-        url = os.getenv("LLM_adress")
-        model = os.getenv("LLM_model")
+        config = VideoSummarizer.load_config()
+        url = config.get("LLM_adress")
+        model = config.get("LLM_model")
+
+        if not url or not model:
+            return "Ошибка: не заданы URL или модель в config.txt"
+
         payload = {
             "model": model,
             "prompt": prompt,

@@ -1,0 +1,2 @@
+LLM_adress="http://127.0.0.1:11434/api/generate"
+LLM_model="qwen2.5-coder:3b"
