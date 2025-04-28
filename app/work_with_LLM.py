@@ -43,5 +43,6 @@ class VideoSummarizer:
         except requests.exceptions.RequestException as e:
             return f"Ошибка соединения: {e}"
 
+
 if __name__ == '__main__':
     print(VideoSummarizer.ask_model("как дела"))
